@@ -49,3 +49,5 @@ if g.cycle_detector() == 1:
 else:
 	print ("Graph has no cycle")
 
+print (g)
+

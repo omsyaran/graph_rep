@@ -11,11 +11,18 @@ class Graph:
         for i in range(0, self.__n):
             for j in range(0, self.__n):
                 self.__g[i][j] = 0
+   #     self.addEdge(0,4)
+   #     self.addEdge(4,3)
+   #     self.addEdge(1,3)
+   #     self.addEdge(2,1)
+   #     self.addEdge(2,0)
+        
         self.addEdge(0,4)
-        self.addEdge(4,3)
+        self.addEdge(4,3)      
         self.addEdge(1,3)
         self.addEdge(2,1)
         self.addEdge(2,0)
+        
     def displayAdjacencyMatrix(self):
         print("\n\n Adjacency Matrix:", end="")
         # displaying the 2D array
@@ -46,31 +53,32 @@ class Graph:
             self.__g[x][y] = 0
     def reset_graph(self,x):
         self.__init__(x)
-    def isCyclicUtil(self, v, visited, recStack):
+    def isCyclicUtil(self, vertex, visited, recStack):
         # Mark current node as visited
         # and adds to recursion stack
-        visited[v] = True
-        recStack[v] = True
+        visited[vertex] = True
+        recStack[vertex] = True
+       
 		# Recur for all neighbours
 		# if any neighbour is visited and in recStack then graph is cyclic
-        for neighbour in self.graph[v]:
-            if [neighbour] == False:
+        for neighbour in range (self.__n):
+            if visited[neighbour] == False:
                 if self.isCyclicUtil(neighbour, visited, recStack) == True:
                     return True
                 elif recStack[neighbour] == True:
                     return True
 
 		# The node needs to be poped from recursion stack before function ends
-        recStack[v] = False
+        recStack[vertex] = False
         return False
 
 	# Returns true if graph is cyclic else false[no cycle in the graph]
     def cycle_detector(self):
-        visited = [False] * (self.V + 1)
-        recStack = [False] * (self.V + 1)
-        for node in range(self.V):
-            if visited[node] == False:
-                if self.isCyclicUtil(node,visited,recStack) == True:
+        visited = [False] * (self.__n + 1)
+        recStack = [False] * (self.__n + 1)
+        for vertex in range(self.__n):
+            if visited[vertex] == False:
+                if self.isCyclicUtil(vertex,visited,recStack) == True:
                     return True
                 return False    
 
@@ -114,9 +122,11 @@ while True:
         obj.displayAdjacencyMatrix()
     
     elif val == 4:
-        print("Detect cycle in the graph ")
-        obj.cycle_detector()
-        obj.displayAdjacencyMatrix()
+        if obj.cycle_detector() == 1:
+            print("This graph has a cycle in it")
+        else:
+            print ("Graph has no cycle in it")
+        #obj.displayAdjacencyMatrix()
     
     elif val == 5:
         print("Reset")
