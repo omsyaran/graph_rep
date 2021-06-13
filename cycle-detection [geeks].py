@@ -12,8 +12,6 @@ class Graph:
 		
 		# Default dictionary to store graph
 		self.graph = defaultdict(list)
-
-
 	# Function to add an edge to graph
 	def addEdge(self,v,w):
 	

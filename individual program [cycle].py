@@ -1,4 +1,8 @@
 import sys
+import networkx as nx
+import matplotlib.pyplot as plt
+import random
+
 class Graph:
     # number of vertices
     __n = 0
@@ -11,20 +15,13 @@ class Graph:
         for i in range(0, self.__n):
             for j in range(0, self.__n):
                 self.__g[i][j] = 0
-   #     self.addEdge(0,4)
-   #     self.addEdge(4,3)
-   #     self.addEdge(1,3)
-   #     self.addEdge(2,1)
-   #     self.addEdge(2,0)
-        
         self.addEdge(0,4)
-        self.addEdge(4,3)      
+        self.addEdge(4,3)
         self.addEdge(1,3)
         self.addEdge(2,1)
         self.addEdge(2,0)
-        
     def displayAdjacencyMatrix(self):
-        print("\n\n Adjacency Matrix:", end="")
+        print("\nAdjacency Matrix:", end="")
         # displaying the 2D array
         for i in range(0, self.__n):
             print()
@@ -51,89 +48,164 @@ class Graph:
         else:
             # remove directed edge
             self.__g[x][y] = 0
+    def drawgraph(self):
+        G = nx.DiGraph()
+        A = ['Ed', 'Du', 'Is', 'Br', 'Jp']
+
+        for i in range(0,self.__n):
+            for j in range(0,self.__n):
+                if j == i:
+                    continue
+                if self.__g[i][j] == 1:
+                    G.add_edges_from([(A[i],A[j])])
+
+        pos = nx.spring_layout(G)
+        nx.draw_networkx_nodes(G, pos, node_size=500)
+        nx.draw_networkx_edges(G, pos, connectionstyle="arc3,rad=0.2",edgelist=G.edges(), edge_color='black')
+        nx.draw_networkx_labels(G, pos)
+        plt.show()
     def reset_graph(self,x):
         self.__init__(x)
-    def isCyclicUtil(self, vertex, visited, recStack):
-        # Mark current node as visited
-        # and adds to recursion stack
-        visited[vertex] = True
-        recStack[vertex] = True
+    
+
+#####################################################################
        
-		# Recur for all neighbours
-		# if any neighbour is visited and in recStack then graph is cyclic
-        for neighbour in range (self.__n):
-            if visited[neighbour] == False:
-                if self.isCyclicUtil(neighbour, visited, recStack) == True:
-                    return True
-                elif recStack[neighbour] == True:
-                    return True
 
-		# The node needs to be poped from recursion stack before function ends
-        recStack[vertex] = False
-        return False
+    def cycle_det(self,start_vertex, visited,pred,lc):
+        label_count = lc
+        visited[start_vertex] = label_count
+        for i in range(self.__n):
+            if (Graph.__g[start_vertex][i] == 1 and (visited[i] == 0)):
+                pred[i] = visited[start_vertex]
+                label_count = label_count + 1
+                visited[i] = label_count
+                #print ("Visited = " + str(visited))
+                #print ("Predecessor = " + str(pred))
+                #print ("\n")
+                self.cycle_det(i,visited,pred,label_count)
+            elif (Graph.__g[start_vertex][i] == 1 and (visited[i] != -999 )): 
+                print ("Cycle formed\n\n")
+        visited[start_vertex] = -999
+    
+#####################################################################3   
+    
+    
 
-	# Returns true if graph is cyclic else false[no cycle in the graph]
-    def cycle_detector(self):
-        visited = [False] * (self.__n + 1)
-        recStack = [False] * (self.__n + 1)
-        for vertex in range(self.__n):
-            if visited[vertex] == False:
-                if self.isCyclicUtil(vertex,visited,recStack) == True:
-                    return True
-                return False    
-
-def menu():
+def main_menu():
     print(">>> Select an option from below <<<")
     print("1) Add An Edge ")
     print("2) Remove An Edge ")
-    print("3) Detect the connectivity")
-    print("4) Cycle Detection")
-    print("5) Reset the graph")
-    print("6) End program")
+    print("3) Reset the graph")
+    print("4) End Program")
+    print("5) Function 2 [detect for cycle]")
+    print("6) Print out the graph")
+    print("7) Add random edge to the graph")
 
-
+def map_menu():
+    print("\nRefer to this table to key in the number")
+    print("       0) Edinburgh    3) Brussels")
+    print("       1) Dublin       4) Jaipur")
+    print("       2) Istanbul")
+  
 obj = Graph(5)
-print("The Default graph")
-obj.displayAdjacencyMatrix()
+print("\nThe Default graph")
+obj.drawgraph()
 
 while True:
-    menu()
-    val = int(input())
+    main_menu()
+    val = int(input("Your option : "))
     if val == 1:
-        print("Enter the directed edge to add based on the format below ")
-        print(" __ to __")
-        dari = int(input())
-        ke = int(input())
+        print("\nAdd a directed edge based on the format below ")
+        print("          'Vertex A' to 'Vertex B'")
+        map_menu()
+        dari = int(input("Vertex A : "))
+        ke = int(input("Vertex B : "))
         obj.addEdge(dari, ke)
         print("After adding new edge ")
-        obj.displayAdjacencyMatrix()
+        obj.drawgraph()
        
     elif val == 2:
-        print("Enter the directed edge to remove based on the format below ")
-        print(" __ to __")
-        dari = int(input())
-        ke = int(input())
+        print("\nRemove a directed edge based on the format below ")
+        print("          'Vertex A' to 'Vertex B'")
+        map_menu()
+        dari = int(input("Vertex A : "))
+        ke = int(input("Vertex B : "))
         obj.removeEdge(dari, ke)
-        print("After removing  edge ")
+        print("After removing the edge ")
         obj.displayAdjacencyMatrix()
-     
+        obj.drawgraph()
+      
     elif val == 3:
-        print("Detect connectivity of the graph ")
-        obj.displayAdjacencyMatrix()
-    
-    elif val == 4:
-        if obj.cycle_detector() == 1:
-            print("This graph has a cycle in it")
-        else:
-            print ("Graph has no cycle in it")
-        #obj.displayAdjacencyMatrix()
-    
-    elif val == 5:
-        print("Reset")
+        print("Reset back to the default graph")
         obj.reset_graph(5)
         obj.displayAdjacencyMatrix()
+        obj.drawgraph()
       
-    elif val == 6:
+    elif val == 4:
         print("Thank you for using our app")
         sys.exit()
+    
+    elif val == 5:
+        print(">> Detection for cycle is being done now")  
+        v = 5
+        visited = [0] * v
+        pred = [0] * v
+        lc = 1
+        obj.cycle_det(2, visited, pred, lc)
+        print ("\n\n")
+        obj.drawgraph()
+    
+    elif val == 6:
+        obj.drawgraph()
+    
+    elif val == 7:
+        a = random.randint(0,4)
+        b = random.randint(0,4)
+        print ("a = " + str(a) + "   b = " + str(b))
+        obj.addEdge(a, b)
+        obj.displayAdjacencyMatrix()
+        obj.drawgraph()
+    
+    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
