@@ -65,13 +65,66 @@ class Graph:
         plt.show()
     def reset_graph(self,x):
         self.__init__(x)
+    def cycle_det(self, start_vertex, visited, pred, lc, local_pos, pred_local):
+        label_count = lc
+        visited[start_vertex] = label_count
+        if label_count == 1:
+            pred[start_vertex] = -10
+            pred_local[start_vertex] = local_pos
+        for i in range(self.__n):
+            # 1 [to see if there is an edge or not] && 0 [indicates tht it is not visited]
+            if Graph.__g[start_vertex][i] == 1 and (visited[i] == 0):
+                local_pos = local_pos + 1
+                pred[i] = start_vertex
+                pred_local[i] = local_pos
+                label_count = label_count + 1
+                visited[i] = label_count
+                self.cycle_det(i, visited, pred, label_count, local_pos, pred_local)
+            elif Graph.__g[start_vertex][i] == 1 and (visited[i] != -1):  # check this != condition over here
+                print("Cycle detected")
+                self.print_cycle(visited, i)
+        visited[start_vertex] = -1  # labelled as -1 when it is no longer considered, when you have backtracked
+    def print_cycle(self, visited, i):
+        map_list = ['Ed', 'Du', 'Is', 'Br', 'Jp']
+        #print(i)
+        count = [False] * self.__n
+        cycle = [-1] * self.__n
+        reach = 0
+        max = 0
+        num = 0
+        for m in range(self.__n):
+            for j in range(self.__n):
+                if visited[j] >= max and count[j] == False:
+                    max = visited[j]
+                    num = j
+                    #print("num", num)
+            if num == i:
+                reach = 1
+            count[num] = True
+            for k in range(self.__n):
+                if cycle[k] == -1:
+                    cycle[k] = num
+                    break
+            max = -1
+            if reach == 1:
+                break
+        #print(cycle)
+        for p in range(4, -1, -1):
+            if cycle[p] != -1:
+                print(map_list[cycle[p]], "-->", end=" ")
+        for p in range(4, -1, -1):
+            if cycle[p] != -1:
+                print(map_list[cycle[p]])
+                break
+        print ("\n")
 
 def main_menu():
     print(">>> Select an option from below <<<")
     print("1) Add An Edge ")
     print("2) Remove An Edge ")
     print("3) Reset the graph")
-    print("4) End Program")
+    print("4) Cycle Detection")
+    print("5) End Program")
 
 def map_menu():
     print("\nRefer to this table to key in the number")
@@ -81,7 +134,6 @@ def map_menu():
   
 obj = Graph(5)
 print("\nThe Default graph")
-obj.displayAdjacencyMatrix()
 obj.drawgraph()
 
 while True:
@@ -114,8 +166,43 @@ while True:
         obj.reset_graph(5)
         obj.displayAdjacencyMatrix()
         obj.drawgraph()
-      
+    
     elif val == 4:
+        print("Cycle detection process has started\n")
+        v = 5
+        visited = [0] * v
+        pred = [999] * v
+        pred_local = [-7] * v
+        lc = 1
+        local_pos = 1
+        obj.addEdge(3,2)
+        obj.drawgraph()
+        obj.cycle_det(4, visited, pred, lc, local_pos, pred_local)
+        obj.drawgraph()
+      
+    elif val == 5:
         print("Thank you for using our app")
         sys.exit()
+             
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         
