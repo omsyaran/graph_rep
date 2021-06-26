@@ -1,0 +1,17 @@
+def master_helper(self,i,visited_vertex,parent_mark):
+        visited_vertex[i] = True
+        for k in self.graph[i]:
+            if visited_vertex[k] == False:
+                if(self.master_helper(k, visited_vertex, i)):
+                    return True
+                elif parent_mark != k:
+                    return True
+        return False
+        
+    def cycle_master(self):
+        visited_vertex = [False]*(self.__n)
+        for i in range(self.__n):
+            if visited_vertex[i] == False:
+                if(self.master_helper(i,visited_vertex,-1)) == True:
+                    return True
+        return False
